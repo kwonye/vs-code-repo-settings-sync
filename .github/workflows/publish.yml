@@ -1,0 +1,67 @@
+name: Publish Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type (patch, minor, major) if not triggered by tag'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  publish:
+    name: Package & Publish to Marketplace
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck and test
+        run: |
+          bun run typecheck
+          bun test
+
+      - name: Build extension
+        run: bun run build
+
+      - name: Package VSIX
+        run: bunx @vscode/vsce package --no-dependencies
+
+      - name: Publish to Visual Studio Code Marketplace
+        if: env.VSCE_PAT != ''
+        run: bunx @vscode/vsce publish -p ${{ secrets.VSCE_PAT }} --no-dependencies
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Publish to Open VSX Registry
+        if: env.OVSX_PAT != ''
+        run: bunx ovsx publish -p ${{ secrets.OVSX_PAT }} --no-dependencies
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+
+      - name: Upload VSIX to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '*.vsix'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

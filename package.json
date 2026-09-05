@@ -1,0 +1,140 @@
+{
+  "name": "repo-settings-sync",
+  "displayName": "Repo Settings Sync",
+  "description": "Seamlessly synchronize your VS Code settings, keybindings, snippets, and extensions to any GitHub repository.",
+  "version": "0.1.0",
+  "publisher": "kwonye",
+  "icon": "assets/icon.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kwonye/vs-code-repo-settings-sync"
+  },
+  "bugs": {
+    "url": "https://github.com/kwonye/vs-code-repo-settings-sync/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Snippets",
+    "Keymaps"
+  ],
+  "keywords": [
+    "settings",
+    "sync",
+    "github",
+    "backup",
+    "keybindings",
+    "snippets",
+    "extensions",
+    "dotfiles"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "repoSettingsSync.turnOnSync",
+        "title": "Turn on Settings Sync...",
+        "category": "Repo Settings Sync"
+      },
+      {
+        "command": "repoSettingsSync.turnOffSync",
+        "title": "Turn off Settings Sync",
+        "category": "Repo Settings Sync"
+      },
+      {
+        "command": "repoSettingsSync.syncNow",
+        "title": "Sync Now",
+        "category": "Repo Settings Sync",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "repoSettingsSync.downloadSettings",
+        "title": "Download Settings (Replace Local)",
+        "category": "Repo Settings Sync",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "repoSettingsSync.uploadSettings",
+        "title": "Upload Settings (Replace Remote)",
+        "category": "Repo Settings Sync",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "repoSettingsSync.setToken",
+        "title": "Set GitHub Personal Access Token (PAT)",
+        "category": "Repo Settings Sync"
+      },
+      {
+        "command": "repoSettingsSync.showLog",
+        "title": "Show Sync Log",
+        "category": "Repo Settings Sync",
+        "icon": "$(output)"
+      }
+    ],
+    "configuration": {
+      "title": "Repo Settings Sync",
+      "properties": {
+        "repoSettingsSync.repository": {
+          "type": "string",
+          "default": "",
+          "description": "Target GitHub repository in 'owner/repo' format (e.g., 'username/vscode-settings')."
+        },
+        "repoSettingsSync.branch": {
+          "type": "string",
+          "default": "main",
+          "description": "Target git branch for storing settings."
+        },
+        "repoSettingsSync.autoSync": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically synchronize local configuration changes in the background."
+        },
+        "repoSettingsSync.syncIntervalMinutes": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "description": "Frequency (in minutes) to check GitHub for remote updates."
+        },
+        "repoSettingsSync.syncKeybindings": {
+          "type": "boolean",
+          "default": true,
+          "description": "Synchronize keyboard shortcuts (keybindings.json)."
+        },
+        "repoSettingsSync.syncSnippets": {
+          "type": "boolean",
+          "default": true,
+          "description": "Synchronize user snippets (snippets/*.json)."
+        },
+        "repoSettingsSync.syncExtensions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Synchronize installed extension list and auto-install missing extensions."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "bun run build",
+    "build": "bun run esbuild.js --production",
+    "watch": "bun run esbuild.js --watch",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "package": "bunx @vscode/vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,12 @@
+.vscode/**
+.vscode-test/**
+src/**
+test/**
+.github/**
+.gitignore
+.git/**
+tsconfig.json
+esbuild.js
+bun.lock
+bun.lockb
+*.vsix
